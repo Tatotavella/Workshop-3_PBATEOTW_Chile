@@ -1,0 +1,25 @@
+angle_3spn2_stacking.cpp:  int newton_bond = force->newton_bond;
+angle_3spn2_stacking.cpp:  force->bounds(arg[0],atom->nangletypes,ilo,ihi);
+angle_3spn2_stacking.cpp:  double epsi_one = force->numeric(arg[1]);
+angle_3spn2_stacking.cpp:  double sigm_one = force->numeric(arg[2]);
+angle_3spn2_stacking.cpp:  double theta0_one = force->numeric(arg[3]);
+angle_3spn2_stacking.cpp:  double alpha_one = force->numeric(arg[4]);
+angle_3spn2_stacking.cpp:  double range_one = force->numeric(arg[5]);
+dihedral_3spn2.cpp:  int newton_bond = force->newton_bond;
+dihedral_3spn2.cpp:  force->bounds(arg[0],atom->ndihedraltypes,ilo,ihi);
+dihedral_3spn2.cpp:  double k_one = force->numeric(arg[1]);
+dihedral_3spn2.cpp:  double phi_one = force->numeric(arg[2]);
+dihedral_3spn2.cpp:  double sigm_one = force->numeric(arg[3]);
+pair_3spn2.cpp:  //double *special_coul = force->special_coul;
+pair_3spn2.cpp:  //double *special_lj = force->special_lj;
+pair_3spn2.cpp:  int newton_pair = force->newton_pair;
+pair_3spn2.cpp:  double qqr2e = force->qqr2e;
+pair_3spn2.cpp:  temp = force->numeric(arg[0]);
+pair_3spn2.cpp:  salt_conc = force->numeric(arg[1]) / 1000.0; // Convert to [M]
+pair_3spn2.cpp:  cut_lj_global = force->numeric(arg[2]);
+pair_3spn2.cpp:  force->bounds(arg[0],atom->ntypes,ilo,ihi);
+pair_3spn2.cpp:  force->bounds(arg[1],atom->ntypes,jlo,jhi);
+pair_3spn2.cpp:  double epsilon_one = force->numeric(arg[2]);
+pair_3spn2.cpp:  double sigma_one = force->numeric(arg[3]);
+pair_3spn2.cpp:    forcecoul = force->qqrd2e * atom->q[i]*atom->q[j]*sqrt(r2inv);
+pair_3spn2.cpp:    phicoul = force->qqrd2e * atom->q[i]*atom->q[j]*sqrt(r2inv);

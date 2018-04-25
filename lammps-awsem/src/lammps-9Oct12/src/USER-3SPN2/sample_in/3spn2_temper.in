@@ -1,0 +1,68 @@
+# Test system for LAMMPS simulation
+
+units       real
+atom_style  full
+log temper.log
+
+variable T world 300.0 315 330 345 360 375
+variable salt equal 100.0
+
+# Random number seed for Langevin integrator
+variable random equal 12345
+
+# Specify the different interaction styles
+
+bond_style      class2
+angle_style     hybrid harmonic stacking/3spn2 
+dihedral_style  3spn2
+pair_style      3spn2 ${T} ${salt} 18.0 tempfix
+
+
+# Periodic boundary conditions
+boundary p p p
+
+# Turn on Newton's 2nd law
+newton on  #yes
+
+# Read in the configuration
+read_data conf_lammps.in
+
+# Specifying the mixing rules for excluded volume interactions
+pair_modify mix arithmetic
+
+# Specify parameters for the neighbor list
+neighbor	2.0 multi
+neigh_modify    check yes
+
+# A timestep of 0.02 ps
+timestep 20.0
+
+# Initialize velocities from a Gaussian distribution
+velocity all create ${T} ${random} rot yes mom yes dist gaussian
+
+# Calculating the different components of the non-bonded energy
+compute edna all pair 3spn2
+variable ebp equal c_edna[1]
+variable ecstk equal c_edna[2]
+variable eexcl equal c_edna[3]
+variable dna_ecoul equal c_edna[4]
+variable nbp equal c_edna[5]
+
+# Specifying the frequency of thermodynamic output
+thermo 1000
+thermo_style custom step v_nbp ebond eangle edihed v_ebp v_ecstk v_eexcl v_dna_ecoul temp
+
+# Specify a Langevin integrator to perform a simulation in the NVT ensemble
+fix tempfix all langevin ${T} ${T} 1000 ${random}
+fix 2 all nve
+
+# Specifying what to write to file
+dump 1 all xyz 1000 ${T}.xyz
+
+# Run X number of steps
+temper 100000 1000 $T tempfix 0 ${random}
+
+
+
+
+

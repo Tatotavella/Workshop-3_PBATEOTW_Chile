@@ -1,0 +1,92 @@
+# Test system for LAMMPS simulation
+
+units       real
+atom_style  full
+log         sim.log
+
+# For a single processor calculation
+variable T equal 300 # Simulation temperature
+variable salt equal 100.0 # Salt concentration [mM]
+
+# Random number seed for Langevin integrator
+variable random equal 12345
+
+# Specify the different interaction styles
+#bond_style      3spn2
+#dihedral_style  3spn2
+
+# Periodic boundary conditions
+boundary p p p
+
+# Turn on Newton's 2nd law
+newton on  #yes
+
+# Read the restart file
+read_restart restart.10000
+
+# Re-specify values that are not stored in the restart file
+angle_style     hybrid harmonic  stacking/3spn2
+pair_style      3spn2 ${T} ${salt} 18.0
+
+angle_coeff 	1	harmonic	47.801147	94.490000
+angle_coeff 	2	harmonic	47.801147	120.150000
+angle_coeff 	3	harmonic	47.801147	112.070000
+angle_coeff 	4	harmonic	47.801147	116.680000
+angle_coeff 	5	harmonic	47.801147	110.120000
+angle_coeff 	6	harmonic	47.801147	110.330000
+angle_coeff 	7	harmonic	47.801147	103.530000
+angle_coeff 	8	harmonic	47.801147	92.060000
+angle_coeff 	9	harmonic	47.801147	107.400000
+angle_coeff 	10	harmonic	47.801147	103.790000
+angle_coeff 	11	stacking/3spn2	3.439293	3.716000	101.150000	3.000000	6.000000
+angle_coeff 	12	stacking/3spn2	3.427342	3.675000	85.940000	3.000000	6.000000
+angle_coeff 	13	stacking/3spn2	3.166826	3.827000	105.260000	3.000000	6.000000
+angle_coeff 	14	stacking/3spn2	3.706979	3.975000	90.260000	3.000000	6.000000
+angle_coeff 	15	stacking/3spn2	2.478489	4.238000	101.590000	3.000000	6.000000
+angle_coeff 	16	stacking/3spn2	3.193117	3.984000	89.500000	3.000000	6.000000
+angle_coeff 	17	stacking/3spn2	2.471319	4.416000	104.310000	3.000000	6.000000
+angle_coeff 	18	stacking/3spn2	3.080784	4.468000	90.820000	3.000000	6.000000
+angle_coeff 	19	stacking/3spn2	3.539675	3.576000	100.890000	3.000000	6.000000
+angle_coeff 	20	stacking/3spn2	3.721319	3.598000	84.830000	3.000000	6.000000
+angle_coeff 	21	stacking/3spn2	3.568356	3.664000	105.480000	3.000000	6.000000
+angle_coeff 	22	stacking/3spn2	3.678298	3.822000	90.180000	3.000000	6.000000
+angle_coeff 	23	stacking/3spn2	2.729446	3.859000	115.950000	3.000000	6.000000
+angle_coeff 	24	stacking/3spn2	3.056883	3.586000	101.510000	3.000000	6.000000
+angle_coeff     25	stacking/3spn2	2.514340	4.030000	119.320000	3.000000	6.000000
+angle_coeff     26	stacking/3spn2	3.164436	3.957000	104.490000	3.000000	6.000000
+
+# Specifying the mixing rules for excluded volume interactions
+pair_modify mix arithmetic
+
+# Specify parameters for the neighbor list
+neighbor	2.0 multi
+neigh_modify    check yes
+
+# A timestep of 0.02 ps
+timestep 20.0
+
+# Initialize velocities from a Gaussian distribution
+velocity all create ${T} ${random} rot yes mom yes dist gaussian
+
+# Calculating the different components of the non-bonded energy
+compute edna all pair 3spn2 
+variable ebp equal c_edna[1] # Base pairing energy
+variable ecstk equal c_edna[2] # Cross stacking energy
+variable eexcl equal c_edna[3] # Excluded volume energy
+variable dna_ecoul equal c_edna[4] # DNA coulombic energy
+variable nbp equal c_edna[5] # Number of base pairs
+
+# Specifying the frequency of thermodynamic output
+thermo 1000
+thermo_style custom step v_nbp ebond eangle edihed v_ebp v_ecstk v_eexcl v_dna_ecoul temp
+
+# Specifying a Langevin integrator to perform a simulation in the NVT ensemble
+fix 1 all langevin ${T} ${T} 1000 ${random} 
+fix 2 all nve
+
+# Write configuration to file
+dump 1 all xyz 1000 traj.xyz
+
+#Run X number of steps
+restart 10000 restart
+run 50000

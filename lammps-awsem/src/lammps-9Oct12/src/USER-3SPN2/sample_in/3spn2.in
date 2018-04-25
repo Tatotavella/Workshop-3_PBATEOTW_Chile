@@ -1,0 +1,66 @@
+# Test system for LAMMPS simulation
+
+units       real
+atom_style  full
+log         sim.log
+
+# For a single processor calculation
+variable T equal 300 # Simulation temperature
+variable salt equal 100.0 # Salt concentration [mM]
+
+# Random number seed for Langevin integrator
+variable random equal 12345
+
+# Specify the different interaction styles
+bond_style      class2
+angle_style     hybrid harmonic stacking/3spn2
+dihedral_style  3spn2
+# pair_stype 3spn2 [temperature] [salt concentration (mM)] [short range cutoff (long range cutoff is salt-dependent)] ...
+    # [Santalucia scaling parameter] [base pair scaling parameter] [base pair relative strength]
+# (Last 4 values should not be changed
+pair_style      3spn2 ${T} ${salt} 18.0
+
+# Periodic boundary conditions
+boundary p p p
+
+# Turn on Newton's 2nd law
+newton on  #yes
+
+# Read in the configuration
+read_data conf_lammps.in
+
+# Specifying the mixing rules for excluded volume interactions
+pair_modify mix arithmetic
+
+# Specify parameters for the neighbor list
+neighbor	2.0 multi
+neigh_modify    check yes
+
+# A timestep of 0.02 ps
+timestep 20.0
+
+# Initialize velocities from a Gaussian distribution
+velocity all create ${T} ${random} rot yes mom yes dist gaussian
+
+# Calculating the different components of the non-bonded energy
+compute edna all pair 3spn2 
+variable ebp equal c_edna[1] # Base pairing energy
+variable ecstk equal c_edna[2] # Cross stacking energy
+variable eexcl equal c_edna[3] # Excluded volume energy
+variable dna_ecoul equal c_edna[4] # DNA coulombic energy
+variable nbp equal c_edna[5] # Number of base pairs
+
+# Specifying the frequency of thermodynamic output
+thermo 1000
+thermo_style custom step v_nbp ebond eangle edihed v_ebp v_ecstk v_eexcl v_dna_ecoul temp
+
+# Specifying a Langevin integrator to perform a simulation in the NVT ensemble
+fix 1 all langevin ${T} ${T} 1000 ${random} 
+fix 2 all nve
+
+# Write configuration to file
+dump 1 all xyz 1000 traj.xyz
+restart 10000 restart
+
+# Run X number of steps
+run 50000

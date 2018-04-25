@@ -1,0 +1,26 @@
+Testing:
+lmp_serial_std
+single chain/single processor (lmp_debug_serial) vs. single chain/multiple processor (lmp_debug_parallel)
+multi chain/single processor  vs. multi chain /multiple processor
+
+Parallelization:
+
+//change the following functions if using global residue index i_res
+i: local index, i_resno: global index
+res_no[i], res_info[i]
+chain_no[i]
+alpha_carbons[i], beta_atoms[i], oxygens[i]
+p_ap->nu(i,j), R->rNO, R->rHO
+isFirst[i], isLast[i]
+xca, xcb, xcp, xo, xh, xn
+se[i_resno]
+
+**Note: isLast/isFirst also takes local index i since they are a function of chain_no[i].
+
+What potentials need to be changed for parallelization
+compute_P_AP
+compute_dssp
+compute_helix
+compute_chain
+compute_chi
+compute_rama

@@ -1,0 +1,18 @@
+Type "make -f make_icnf.s" to build icnf.exe.
+
+To generate a conf_lammps.in input file, simply specify the correct 
+command line arguments
+
+i.e. icnf.exe <sequence file> <complimentarity flag> <output directory>
+
+The sequence file is formatted as follows
+
+<number of bases>
+<sequence>
+
+15
+ATGCCGTAATGACTG
+
+The complementarity flag is either 1 for dsDNA or 0 for ssDNA.
+
+A .xyz and a .psf file are also generated for purposes of visualization.

@@ -1,0 +1,20 @@
+
+# For a single processor calculation
+variable T equal 300 # Simulation temperature
+variable salt equal 100.0 # Salt concentration [mM]
+
+# Random number seed for Langevin integrator
+variable random equal 12345
+
+# Specify the different interaction styles
+#bond_style      3spn2
+#dihedral_style  3spn2
+
+# Periodic boundary conditions
+boundary p p p
+
+# Turn on Newton's 2nd law
+newton on  #yes
+
+# Read the restart file
+read_restart restart.10000
