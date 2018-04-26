@@ -1,4 +1,4 @@
-[Chain]
+[chain]
 20.0 20.0 20.0 
 2.459108 2.519591 2.466597
 
@@ -86,7 +86,7 @@
 
 [Fragment_Memory_Table]
 0.2
-fragsLAMW.mem.single
+1r69.mem
 uniform.gamma
 0 50 0.01
 0.1
